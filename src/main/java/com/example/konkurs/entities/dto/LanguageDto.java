@@ -1,33 +1,33 @@
 package com.example.konkurs.entities.dto;
 
-import com.example.konkurs.entities.enums.ELanguage;
-import com.example.konkurs.entities.enums.ELanguageLevel;
-
 public class LanguageDto {
 	
-	private ELanguage language;
+	private Integer languageId;
 	
-	private ELanguageLevel level;
+	private String note;
 
 	public LanguageDto() {
 		super();
 	}
 
-	public ELanguage getLanguage() {
-		return language;
+	public Integer getLanguageId() {
+		return languageId;
 	}
 
-	public void setLanguage(ELanguage language) {
-		this.language = language;
+	public void setLanguageId(Integer languageId) {
+		this.languageId = languageId;
 	}
 
-	public ELanguageLevel getLevel() {
-		return level;
+	public String getNote() {
+		return note;
 	}
 
-	public void setLevel(ELanguageLevel level) {
-		this.level = level;
+	public void setNote(String note) {
+		this.note = note;
 	}
+	
+	
+
 	
 	
 

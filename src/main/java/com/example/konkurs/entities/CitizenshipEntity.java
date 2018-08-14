@@ -11,37 +11,33 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "languages")
+@Table(name = "citizenship")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class LanguageEntity {
+public class CitizenshipEntity {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	@Column
-	private String language;
+	private String citizenship;
 	
-	@Column
-	private String level;
-	
-	@OneToMany(mappedBy = "language", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "citizenship", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JsonBackReference
-	private List<CandidateLanguageEntity> candidateLanguage;
+	private List<CandidateEntity> candidates;
 	
 	@Column
 	private Boolean deleted;
 	
-	@Version
+	@Column
 	private Integer version;
 
-	public LanguageEntity() {
+	public CitizenshipEntity() {
 		super();
 	}
 
@@ -53,28 +49,20 @@ public class LanguageEntity {
 		this.id = id;
 	}
 
-	public String getLanguage() {
-		return language;
+	public String getCitizenship() {
+		return citizenship;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setCitizenship(String citizenship) {
+		this.citizenship = citizenship;
 	}
 
-	public String getLevel() {
-		return level;
+	public List<CandidateEntity> getCandidates() {
+		return candidates;
 	}
 
-	public void setLevel(String level) {
-		this.level = level;
-	}
-
-	public List<CandidateLanguageEntity> getCandidateLanguage() {
-		return candidateLanguage;
-	}
-
-	public void setCandidateLanguage(List<CandidateLanguageEntity> candidateLanguage) {
-		this.candidateLanguage = candidateLanguage;
+	public void setCandidates(List<CandidateEntity> candidates) {
+		this.candidates = candidates;
 	}
 
 	public Boolean getDeleted() {
@@ -93,4 +81,6 @@ public class LanguageEntity {
 		this.version = version;
 	}
 	
+	
+
 }

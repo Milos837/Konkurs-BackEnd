@@ -13,19 +13,22 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "requirements")
-public class RequirementsEntity {
+@Table(name = "education")
+public class EducationEntity {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	@Column
-	private String requirement;
+	private String schoolName;
+	
+	@Column
+	private String note;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JoinColumn(name = "posting")
-	private PostingEntity posting;
+	@JoinColumn(name = "candidate")
+	private CandidateEntity candidate;
 	
 	@Column
 	private Boolean deleted;
@@ -33,7 +36,7 @@ public class RequirementsEntity {
 	@Version
 	private Integer version;
 
-	public RequirementsEntity() {
+	public EducationEntity() {
 		super();
 	}
 
@@ -45,20 +48,28 @@ public class RequirementsEntity {
 		this.id = id;
 	}
 
-	public String getRequirement() {
-		return requirement;
+	public String getSchoolName() {
+		return schoolName;
 	}
 
-	public void setRequirement(String requirement) {
-		this.requirement = requirement;
+	public void setSchoolName(String schoolName) {
+		this.schoolName = schoolName;
 	}
 
-	public PostingEntity getPosting() {
-		return posting;
+	public String getNote() {
+		return note;
 	}
 
-	public void setPosting(PostingEntity posting) {
-		this.posting = posting;
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public CandidateEntity getCandidate() {
+		return candidate;
+	}
+
+	public void setCandidate(CandidateEntity candidate) {
+		this.candidate = candidate;
 	}
 
 	public Boolean getDeleted() {

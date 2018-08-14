@@ -2,7 +2,8 @@ package com.example.konkurs.entities.dto;
 
 import java.util.List;
 
-import com.example.konkurs.entities.enums.ECitizenship;
+import com.example.konkurs.entities.CertificateEntity;
+import com.example.konkurs.entities.EducationEntity;
 import com.example.konkurs.entities.enums.EEducationLevel;
 import com.example.konkurs.entities.enums.EGender;
 
@@ -20,15 +21,19 @@ public class ApplicationDto {
 	
 	private String ssn;
 	
-	private ECitizenship citizenship;
+	private Integer citizenshipId;
 	
 	private List<LanguageDto> language;
 	
 	private EEducationLevel educationLevel;
 	
-	private String school;
+	private List<EducationEntity> education;
 	
-	private List<String> certifications;
+	private String candidateNote;
+	
+	private List<CertificateEntity> certifications;
+	
+	private String applicationNote;
 
 	public ApplicationDto() {
 		super();
@@ -82,12 +87,12 @@ public class ApplicationDto {
 		this.ssn = ssn;
 	}
 
-	public ECitizenship getCitizenship() {
-		return citizenship;
+	public Integer getCitizenshipId() {
+		return citizenshipId;
 	}
 
-	public void setCitizenship(ECitizenship citizenship) {
-		this.citizenship = citizenship;
+	public void setCitizenshipId(Integer citizenshipId) {
+		this.citizenshipId = citizenshipId;
 	}
 
 	public List<LanguageDto> getLanguage() {
@@ -98,6 +103,30 @@ public class ApplicationDto {
 		this.language = language;
 	}
 
+	public List<EducationEntity> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<EducationEntity> education) {
+		this.education = education;
+	}
+
+	public String getCandidateNote() {
+		return candidateNote;
+	}
+
+	public void setCandidateNote(String candidateNote) {
+		this.candidateNote = candidateNote;
+	}
+
+	public String getApplicationNote() {
+		return applicationNote;
+	}
+
+	public void setApplicationNote(String applicationNote) {
+		this.applicationNote = applicationNote;
+	}
+
 	public EEducationLevel getEducationLevel() {
 		return educationLevel;
 	}
@@ -106,19 +135,12 @@ public class ApplicationDto {
 		this.educationLevel = educationLevel;
 	}
 
-	public String getSchool() {
-		return school;
-	}
 
-	public void setSchool(String school) {
-		this.school = school;
-	}
-
-	public List<String> getCertifications() {
+	public List<CertificateEntity> getCertifications() {
 		return certifications;
 	}
 
-	public void setCertifications(List<String> certifications) {
+	public void setCertifications(List<CertificateEntity> certifications) {
 		this.certifications = certifications;
 	}
 	

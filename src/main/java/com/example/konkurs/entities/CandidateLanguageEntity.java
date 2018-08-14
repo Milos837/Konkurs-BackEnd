@@ -13,19 +13,23 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "requirements")
-public class RequirementsEntity {
+@Table(name = "candidate_language")
+public class CandidateLanguageEntity {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column
-	private String requirement;
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = "candidate")
+	private CandidateEntity candidate;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JoinColumn(name = "posting")
-	private PostingEntity posting;
+	@JoinColumn(name = "language")
+	private LanguageEntity language;
+	
+	@Column
+	private String note;
 	
 	@Column
 	private Boolean deleted;
@@ -33,7 +37,7 @@ public class RequirementsEntity {
 	@Version
 	private Integer version;
 
-	public RequirementsEntity() {
+	public CandidateLanguageEntity() {
 		super();
 	}
 
@@ -45,20 +49,28 @@ public class RequirementsEntity {
 		this.id = id;
 	}
 
-	public String getRequirement() {
-		return requirement;
+	public CandidateEntity getCandidate() {
+		return candidate;
 	}
 
-	public void setRequirement(String requirement) {
-		this.requirement = requirement;
+	public void setCandidate(CandidateEntity candidate) {
+		this.candidate = candidate;
 	}
 
-	public PostingEntity getPosting() {
-		return posting;
+	public LanguageEntity getLanguage() {
+		return language;
 	}
 
-	public void setPosting(PostingEntity posting) {
-		this.posting = posting;
+	public void setLanguage(LanguageEntity language) {
+		this.language = language;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	public Boolean getDeleted() {

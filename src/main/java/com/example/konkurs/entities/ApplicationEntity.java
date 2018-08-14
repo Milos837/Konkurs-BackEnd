@@ -5,10 +5,9 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,9 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import com.example.konkurs.entities.enums.ECitizenship;
-import com.example.konkurs.entities.enums.EEducationLevel;
-import com.example.konkurs.entities.enums.EGender;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -28,43 +24,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class ApplicationEntity {
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column
-	private String firstName;
-	
-	@Column
-	private String lastName;
-	
-	@Enumerated(EnumType.STRING)
-	private EGender gender;
-	
-	@Column
-	private String email;
-	
-	@Column
-	private String idNumber;
-	
-	@Column
-	private String ssn;
-	
-	@Enumerated(EnumType.STRING)
-	private ECitizenship citizenship;
-	
-	@OneToMany(mappedBy = "application", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
-	private List<LanguageEntity> language;
-	
-	@Column
-	private EEducationLevel educationLevel;
-	
-	@Column
-	private String school;
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = "candidate")
+	private CandidateEntity candidate;
 	
 	@OneToMany(mappedBy = "application", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JsonBackReference
 	private List<CertificateEntity> certifications;
+	
+	@Column
+	private String note;
 	
 	@Column
 	private String cv;
@@ -91,84 +63,12 @@ public class ApplicationEntity {
 		this.id = id;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public CandidateEntity getCandidate() {
+		return candidate;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public EGender getGender() {
-		return gender;
-	}
-
-	public void setGender(EGender gender) {
-		this.gender = gender;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getIdNumber() {
-		return idNumber;
-	}
-
-	public void setIdNumber(String idNumber) {
-		this.idNumber = idNumber;
-	}
-
-	public String getSsn() {
-		return ssn;
-	}
-
-	public void setSsn(String ssn) {
-		this.ssn = ssn;
-	}
-
-	public List<LanguageEntity> getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(List<LanguageEntity> language) {
-		this.language = language;
-	}
-
-	public ECitizenship getCitizenship() {
-		return citizenship;
-	}
-
-	public void setCitizenship(ECitizenship citizenship) {
-		this.citizenship = citizenship;
-	}
-
-	public EEducationLevel getEducationLevel() {
-		return educationLevel;
-	}
-
-	public void setEducationLevel(EEducationLevel educationLevel) {
-		this.educationLevel = educationLevel;
-	}
-
-	public String getSchool() {
-		return school;
-	}
-
-	public void setSchool(String school) {
-		this.school = school;
+	public void setCandidate(CandidateEntity candidate) {
+		this.candidate = candidate;
 	}
 
 	public List<CertificateEntity> getCertifications() {
@@ -177,6 +77,14 @@ public class ApplicationEntity {
 
 	public void setCertifications(List<CertificateEntity> certifications) {
 		this.certifications = certifications;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	public String getCv() {
