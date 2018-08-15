@@ -15,9 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.konkurs.entities.OfferingEntity;
 import com.example.konkurs.entities.PostingEntity;
+import com.example.konkurs.entities.RequirementsEntity;
+import com.example.konkurs.entities.ResponsibilitiesEntity;
 import com.example.konkurs.entities.dto.PostingDto;
+import com.example.konkurs.repositories.OfferingRepository;
 import com.example.konkurs.repositories.PostingRepository;
+import com.example.konkurs.repositories.ReponsibilitiesRepository;
+import com.example.konkurs.repositories.RequirementsRepository;
 import com.example.konkurs.services.PostingService;
 
 @RestController
@@ -29,6 +35,15 @@ public class PostingController {
 	
 	@Autowired
 	private PostingService postingService;
+	
+	@Autowired
+	private ReponsibilitiesRepository responsibilitiesRepository;
+	
+	@Autowired
+	private RequirementsRepository requirementsRepository;
+	
+	@Autowired
+	private OfferingRepository offeringRepository;
 	
 	//	Vrati sve
 	@GetMapping("/")
@@ -74,6 +89,39 @@ public class PostingController {
 		PostingEntity posting = postingService.delete(postingId);
 		if (posting != null) {
 			return new ResponseEntity<PostingEntity>(posting, HttpStatus.OK);
+		}
+		return null;
+	}
+	
+	//	Vrati obaveze za posting
+	@GetMapping("/{postingId}/responsibilities/")
+	public ResponseEntity<?> getResponsibilitiesForPosting(@PathVariable Integer postingId) {
+		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
+			List<ResponsibilitiesEntity> res = responsibilitiesRepository
+					.findByPosting(postingRepository.findById(postingId).get());
+			return new ResponseEntity<List<ResponsibilitiesEntity>>(res, HttpStatus.OK);
+		}
+		return null;
+	}
+	
+	//	Vrati uslove za posting
+	@GetMapping("/{postingId}/requirements/")
+	public ResponseEntity<?> getRequirementsForPosting(@PathVariable Integer postingId) {
+		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
+			List<RequirementsEntity> req = requirementsRepository
+					.findByPosting(postingRepository.findById(postingId).get());
+			return new ResponseEntity<List<RequirementsEntity>>(req, HttpStatus.OK);
+		}
+		return null;
+	}
+	
+	//	Vrati ponude za posting
+	@GetMapping("/{postingId}/offering/")
+	public ResponseEntity<?> getOfferingForPosting(@PathVariable Integer postingId) {
+		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
+			List<OfferingEntity> off = offeringRepository
+					.findByPosting(postingRepository.findById(postingId).get());
+			return new ResponseEntity<List<OfferingEntity>>(off, HttpStatus.OK);
 		}
 		return null;
 	}

@@ -19,7 +19,7 @@ import javax.persistence.Version;
 
 import com.example.konkurs.entities.enums.EEducationLevel;
 import com.example.konkurs.entities.enums.EGender;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -54,18 +54,18 @@ public class CandidateEntity {
 	private CitizenshipEntity citizenship;
 	
 	@OneToMany(mappedBy = "candidate", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<CandidateLanguageEntity> candidateLanguage;
 	
 	@Enumerated(EnumType.STRING)
 	private EEducationLevel educationLevel;
 	
 	@OneToMany(mappedBy = "candidate", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<EducationEntity> education;
 	
 	@OneToMany(mappedBy = "candidate", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<ApplicationEntity> applications;
 	
 	@Column

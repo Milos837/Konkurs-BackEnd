@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.konkurs.entities.ApplicationEntity;
+import com.example.konkurs.entities.CitizenshipEntity;
+import com.example.konkurs.entities.LanguageEntity;
 import com.example.konkurs.entities.dto.ApplicationDto;
 import com.example.konkurs.repositories.ApplicationRepository;
+import com.example.konkurs.repositories.CitizenshipRepository;
+import com.example.konkurs.repositories.LanguageRepository;
 import com.example.konkurs.repositories.PostingRepository;
 import com.example.konkurs.services.ApplicationService;
 
@@ -32,6 +36,12 @@ public class ApplicationController {
 	
 	@Autowired
 	private ApplicationService applicationService;
+	
+	@Autowired
+	private CitizenshipRepository citizenshipRepository;
+	
+	@Autowired
+	private LanguageRepository languageRepository;
 	
 	//	Vrati sve
 	@GetMapping("/")
@@ -72,6 +82,25 @@ public class ApplicationController {
 			return new ResponseEntity<ApplicationEntity>(application, HttpStatus.OK);
 		}
 		return null;
+	}
+	
+	//	Vrati sva drzavljanstva
+	@GetMapping("/citizenships/")
+	public ResponseEntity<?> getAllCitizenships() {
+		List<CitizenshipEntity> citizenships = ((List<CitizenshipEntity>) citizenshipRepository.findAll())
+				.stream().filter(citizenship -> !citizenship.getDeleted().equals(true))
+				.collect(Collectors.toList());
+		return new ResponseEntity<List<CitizenshipEntity>>(citizenships, HttpStatus.OK);
+	}
+	
+	//	Vrati sve jezike
+	@GetMapping("/languages/")
+	public ResponseEntity<?> getAllLanguages() {
+		List<LanguageEntity> languages = ((List<LanguageEntity>) languageRepository.findAll())
+				.stream().filter(lang -> !lang.getDeleted().equals(true))
+				.collect(Collectors.toList());
+		
+		return new ResponseEntity<List<LanguageEntity>>(languages, HttpStatus.OK);
 	}
 
 }

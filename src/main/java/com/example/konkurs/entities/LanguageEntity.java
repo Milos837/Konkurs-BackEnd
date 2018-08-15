@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -32,7 +33,7 @@ public class LanguageEntity {
 	private String level;
 	
 	@OneToMany(mappedBy = "language", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<CandidateLanguageEntity> candidateLanguage;
 	
 	@Column

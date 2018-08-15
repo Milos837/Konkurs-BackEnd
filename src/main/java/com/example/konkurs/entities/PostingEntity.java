@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -33,19 +34,19 @@ public class PostingEntity {
 	private LocalDate date;
 	
 	@OneToMany(mappedBy = "posting", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<ResponsibilitiesEntity> responsibilities;
 	
 	@OneToMany(mappedBy = "posting", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<RequirementsEntity> requirements;
 	
 	@OneToMany(mappedBy = "posting", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<OfferingEntity> offering;
 	
 	@OneToMany(mappedBy = "posting", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<ApplicationEntity> applications;
 	
 	@Column

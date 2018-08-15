@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -28,7 +29,7 @@ public class CitizenshipEntity {
 	private String citizenship;
 	
 	@OneToMany(mappedBy = "citizenship", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonIgnore
 	private List<CandidateEntity> candidates;
 	
 	@Column
