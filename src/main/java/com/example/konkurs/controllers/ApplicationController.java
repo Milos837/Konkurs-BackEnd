@@ -65,7 +65,7 @@ public class ApplicationController {
 	}
 	
 	//	Dodaj novi
-	@PostMapping("/postings/{postingId}")
+	@PostMapping("/postings/{postingId}/no-security/")
 	public ResponseEntity<?> save(@PathVariable Integer postingId, @RequestBody ApplicationDto newApplication) {
 		if(postingRepository.existsById(postingId)) {
 			ApplicationEntity application = applicationService.save(postingId, newApplication);
@@ -85,7 +85,7 @@ public class ApplicationController {
 	}
 	
 	//	Vrati sva drzavljanstva
-	@GetMapping("/citizenships/")
+	@GetMapping("/citizenships/no-security/")
 	public ResponseEntity<?> getAllCitizenships() {
 		List<CitizenshipEntity> citizenships = ((List<CitizenshipEntity>) citizenshipRepository.findAll())
 				.stream().filter(citizenship -> !citizenship.getDeleted().equals(true))
@@ -94,7 +94,7 @@ public class ApplicationController {
 	}
 	
 	//	Vrati sve jezike
-	@GetMapping("/languages/")
+	@GetMapping("/languages/no-security/")
 	public ResponseEntity<?> getAllLanguages() {
 		List<LanguageEntity> languages = ((List<LanguageEntity>) languageRepository.findAll())
 				.stream().filter(lang -> !lang.getDeleted().equals(true))
