@@ -35,6 +35,11 @@ public class RoleEntity {
 	public RoleEntity() {
 		super();
 	}
+	
+	public RoleEntity(String name) {
+		super();
+		this.name = name;
+	}
 
 	public Integer getId() {
 		return id;
