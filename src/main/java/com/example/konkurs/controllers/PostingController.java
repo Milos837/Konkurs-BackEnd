@@ -46,7 +46,7 @@ public class PostingController {
 	private OfferingRepository offeringRepository;
 	
 	//	Vrati sve
-	@GetMapping("/")
+	@GetMapping("/no-security/")
 	public ResponseEntity<?> getAll() {
 		
 		List<PostingEntity> postings = ((List<PostingEntity>) postingRepository.findAll())
@@ -57,7 +57,7 @@ public class PostingController {
 	}
 	
 	//	Vrati po ID-u
-	@GetMapping("/{postingId}")
+	@GetMapping("/{postingId}/no-security/")
 	public ResponseEntity<?> getOne(@PathVariable Integer postingId) {
 		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
 			PostingEntity posting = postingRepository.findById(postingId).get();
@@ -94,7 +94,7 @@ public class PostingController {
 	}
 	
 	//	Vrati obaveze za posting
-	@GetMapping("/{postingId}/responsibilities/")
+	@GetMapping("/{postingId}/responsibilities/no-security/")
 	public ResponseEntity<?> getResponsibilitiesForPosting(@PathVariable Integer postingId) {
 		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
 			List<ResponsibilitiesEntity> res = responsibilitiesRepository
@@ -105,7 +105,7 @@ public class PostingController {
 	}
 	
 	//	Vrati uslove za posting
-	@GetMapping("/{postingId}/requirements/")
+	@GetMapping("/{postingId}/requirements/no-security/")
 	public ResponseEntity<?> getRequirementsForPosting(@PathVariable Integer postingId) {
 		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
 			List<RequirementsEntity> req = requirementsRepository
@@ -116,7 +116,7 @@ public class PostingController {
 	}
 	
 	//	Vrati ponude za posting
-	@GetMapping("/{postingId}/offering/")
+	@GetMapping("/{postingId}/offering/no-security/")
 	public ResponseEntity<?> getOfferingForPosting(@PathVariable Integer postingId) {
 		if(postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
 			List<OfferingEntity> off = offeringRepository
