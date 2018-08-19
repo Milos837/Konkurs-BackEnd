@@ -84,14 +84,16 @@ public class ApplicationServiceImpl implements ApplicationService{
 		}
 		
 		for (LanguageDto language : newApplication.getLanguage()) {
-			LanguageEntity lang = languageRepository.findById(language.getLanguageId()).get();
-			
-			CandidateLanguageEntity canLang = new CandidateLanguageEntity();
-			canLang.setDeleted(false);
-			canLang.setCandidate(candidate);
-			canLang.setLanguage(lang);
-			canLang.setNote(language.getNote());
-			candidateLanguageRepository.save(canLang);
+			if (languageRepository.existsById(language.getLanguageId())) {
+				LanguageEntity lang = languageRepository.findById(language.getLanguageId()).get();
+				
+				CandidateLanguageEntity canLang = new CandidateLanguageEntity();
+				canLang.setDeleted(false);
+				canLang.setCandidate(candidate);
+				canLang.setLanguage(lang);
+				canLang.setNote(language.getNote());
+				candidateLanguageRepository.save(canLang);
+			}
 		}
 		
 		for (EducationEntity education : newApplication.getEducation()) {

@@ -1,9 +1,13 @@
 package com.example.konkurs.services;
 
+import java.io.File;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileHandler {
 	
-	public String uploadCv(MultipartFile file);
+	public Boolean uploadCv(MultipartFile file, Integer appId);
+	
+	public File getCv(Integer appId);
 
 }

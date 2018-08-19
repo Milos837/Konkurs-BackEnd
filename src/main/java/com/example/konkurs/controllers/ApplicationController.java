@@ -1,10 +1,17 @@
 package com.example.konkurs.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -174,10 +181,47 @@ public class ApplicationController {
 		return null;
 	}
 	
-	@PostMapping("/uploadCV/")
-	public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file) {
-		String result = fileHandler.uploadCv(file);
-		return new ResponseEntity<String>(result, HttpStatus.OK);
+	//	uploaduj CV za aplikaciju
+	@PostMapping("/{appId}/uploadCV/no-security/")
+	public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
+				&& applicationRepository.findById(appId).get().getCv() == null) {
+			Boolean result = fileHandler.uploadCv(file, appId);
+			if (result) {
+				return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Boolean>(result, HttpStatus.BAD_REQUEST);
+			}
+			
+		}
+		return null;
+	}
+	
+	//	Preuzmi CV za aplikaciju
+	@PostMapping("/{appId}/downloadCV/")
+	public ResponseEntity<Resource> downloadCv(@PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
+				&& applicationRepository.findById(appId).get().getCv() != null) {
+			try {
+				File file = fileHandler.getCv(appId);
+				
+				InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+				
+				HttpHeaders responseHeaders = new HttpHeaders();
+		        responseHeaders.add("content-disposition", "attachment; filename=" + file.getName());
+		        
+				
+				return ResponseEntity.ok()
+			            .headers(responseHeaders)
+			            .contentLength(file.length())
+			            .contentType(MediaType.parseMediaType("application/octet-stream"))
+			            .body(resource);
+			} catch (IOException e) {
+				e.getStackTrace();
+			}
+			return null;
+		}
+		return null;
 	}
 	
 	
