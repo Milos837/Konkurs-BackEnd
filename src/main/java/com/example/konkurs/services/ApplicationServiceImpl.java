@@ -48,6 +48,9 @@ public class ApplicationServiceImpl implements ApplicationService{
 	@Autowired
 	private CitizenshipRepository citizenshipRepository;
 	
+	@Autowired
+	private EmailService emailService;
+	
 	public ApplicationEntity save(Integer postingId, ApplicationDto newApplication) {
 		ApplicationEntity application = new ApplicationEntity();
 		CandidateEntity candidate = new CandidateEntity();
@@ -104,6 +107,8 @@ public class ApplicationServiceImpl implements ApplicationService{
 			edu.setNote(education.getNote());
 			educationRepository.save(edu);
 		}
+		
+		emailService.newAppNotification(application.getId());
 		
 		return application;
 	}

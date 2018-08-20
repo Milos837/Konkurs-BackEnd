@@ -16,8 +16,8 @@ import com.example.konkurs.repositories.ApplicationRepository;
 @Service
 public class FileHandlerImpl implements FileHandler{
 	
-	//private static String CV_FOLDER = "/home/milos/Java/spring-workspace/konkurs/cv/";
-	private static String CV_FOLDER = "C:\\Java\\spring-workspace\\konkurs-backend\\cv\\";
+	private static String CV_FOLDER = "/home/milos/Java/spring-workspace/konkurs/cv/";
+	//private static String CV_FOLDER = "C:\\Java\\spring-workspace\\konkurs-backend\\cv\\";
 	
 	@Autowired
 	private ApplicationRepository applicationRepository;
