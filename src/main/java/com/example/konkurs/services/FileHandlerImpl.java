@@ -11,33 +11,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.konkurs.entities.ApplicationEntity;
+import com.example.konkurs.entities.CvEntity;
 import com.example.konkurs.repositories.ApplicationRepository;
+import com.example.konkurs.repositories.CvRepository;
 
 @Service
 public class FileHandlerImpl implements FileHandler{
 	
-	private static String CV_FOLDER = "/home/milos/Java/spring-workspace/konkurs/cv/";
-	//private static String CV_FOLDER = "C:\\Java\\spring-workspace\\konkurs-backend\\cv\\";
-	
 	@Autowired
 	private ApplicationRepository applicationRepository;
+	
+	@Autowired
+	private CvRepository cvRepository;
 	
 	public Boolean uploadCv(MultipartFile file, Integer appId) {
 		
 		try {
 			
-			Long time = System.currentTimeMillis();
-			
-			String fileName = time.toString();
-			
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(CV_FOLDER + fileName + ".pdf");
-            Files.write(path, bytes);
+			
             
             if (applicationRepository.existsById(appId)) {
             	ApplicationEntity app = applicationRepository.findById(appId).get();
-            	app.setCv(path.toString());
-            	applicationRepository.save(app);
+            	CvEntity cv = new CvEntity();
+            	cv.setDeleted(false);
+            	cv.setApplication(app);
+            	cv.setFile(bytes);
+            	cvRepository.save(cv);
             }
             
             return true;
@@ -48,13 +48,11 @@ public class FileHandlerImpl implements FileHandler{
 		}
 	}
 	
-	public File getCv(Integer appId) {
+	public byte[] getCv(Integer appId) {
 		
-		String path = applicationRepository.findById(appId).get().getCv();
+		CvEntity cv = cvRepository.findByApplication(applicationRepository.findById(appId).get());
 		
-		File cv = new File(path);
-		
-		return cv;
+		return cv.getFile();
 	}
 
 }

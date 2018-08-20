@@ -12,10 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -38,8 +40,9 @@ public class ApplicationEntity {
 	@Column
 	private String note;
 	
-	@Column
-	private String cv;
+	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private CvEntity cv;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "posting")
@@ -87,11 +90,11 @@ public class ApplicationEntity {
 		this.note = note;
 	}
 
-	public String getCv() {
+	public CvEntity getCv() {
 		return cv;
 	}
 
-	public void setCv(String cv) {
+	public void setCv(CvEntity cv) {
 		this.cv = cv;
 	}
 

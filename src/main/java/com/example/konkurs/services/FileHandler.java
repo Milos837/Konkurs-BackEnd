@@ -8,6 +8,6 @@ public interface FileHandler {
 	
 	public Boolean uploadCv(MultipartFile file, Integer appId);
 	
-	public File getCv(Integer appId);
+	public byte[] getCv(Integer appId);
 
 }

@@ -1,13 +1,11 @@
 package com.example.konkurs.controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +25,7 @@ import com.example.konkurs.entities.ApplicationEntity;
 import com.example.konkurs.entities.CandidateLanguageEntity;
 import com.example.konkurs.entities.CertificateEntity;
 import com.example.konkurs.entities.CitizenshipEntity;
+import com.example.konkurs.entities.CvEntity;
 import com.example.konkurs.entities.EducationEntity;
 import com.example.konkurs.entities.LanguageEntity;
 import com.example.konkurs.entities.PostingEntity;
@@ -35,6 +34,7 @@ import com.example.konkurs.repositories.ApplicationRepository;
 import com.example.konkurs.repositories.CandidateLanguageRepository;
 import com.example.konkurs.repositories.CertificateRepository;
 import com.example.konkurs.repositories.CitizenshipRepository;
+import com.example.konkurs.repositories.CvRepository;
 import com.example.konkurs.repositories.EducationRepository;
 import com.example.konkurs.repositories.LanguageRepository;
 import com.example.konkurs.repositories.PostingRepository;
@@ -71,6 +71,9 @@ public class ApplicationController {
 	
 	@Autowired
 	private FileHandler fileHandler;
+	
+	@Autowired
+	private CvRepository cvRepository;
 	
 	//	Vrati sve
 	@GetMapping("/")
@@ -200,30 +203,28 @@ public class ApplicationController {
 	//	Preuzmi CV za aplikaciju
 	@PostMapping("/{appId}/downloadCV/")
 	public ResponseEntity<Resource> downloadCv(@PathVariable Integer appId) {
-		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
-				&& applicationRepository.findById(appId).get().getCv() != null) {
-			try {
-				File file = fileHandler.getCv(appId);
-				
-				InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-				
-				HttpHeaders responseHeaders = new HttpHeaders();
-		        responseHeaders.add("content-disposition", "attachment; filename=" + file.getName());
-		        
-				
-				return ResponseEntity.ok()
-			            .headers(responseHeaders)
-			            .contentLength(file.length())
-			            .contentType(MediaType.parseMediaType("application/octet-stream"))
-			            .body(resource);
-			} catch (IOException e) {
-				e.getStackTrace();
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
+			ApplicationEntity app = applicationRepository.findById(appId).get();
+			
+			if (!cvRepository.existsByApplication(app)) {
+				return null;
 			}
-			return null;
+			
+			CvEntity cv = cvRepository.findByApplication(app);
+			
+			HttpHeaders responseHeaders = new HttpHeaders();
+	        responseHeaders.add("content-disposition", "attachment; filename=" + "cv.pdf");
+	        
+			
+			return ResponseEntity.ok()
+		            .headers(responseHeaders)
+		            .contentLength(cv.getFile().length)
+		            .contentType(MediaType.parseMediaType("application/octet-stream"))
+		            .body(new ByteArrayResource(cv.getFile()));
 		}
 		return null;
 	}
-	
+//	
 	
 	
 	
