@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name="cv")
-public class CvEntity {
+@Table(name="attachment")
+public class AttachmentEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,16 @@ public class CvEntity {
 	public ApplicationEntity application;
 	
 	@Lob
-	@Column(name = "file", columnDefinition="MEDIUMBLOB")
-	public byte[] file;
+	@Column(name = "cv", columnDefinition="MEDIUMBLOB")
+	public byte[] cv;
+	
+	@Lob
+	@Column(name = "motivation", columnDefinition="MEDIUMBLOB")
+	public byte[] motivation;
+	
+	@Lob
+	@Column(name = "coverLetter", columnDefinition="MEDIUMBLOB")
+	public byte[] coverLetter;
 	
 	@Column
 	private Boolean deleted;
@@ -35,7 +43,7 @@ public class CvEntity {
 	@Version
 	private Integer version;
 
-	public CvEntity() {
+	public AttachmentEntity() {
 		super();
 	}
 
@@ -55,12 +63,28 @@ public class CvEntity {
 		this.application = application;
 	}
 
-	public byte[] getFile() {
-		return file;
+	public byte[] getCv() {
+		return cv;
 	}
 
-	public void setFile(byte[] file) {
-		this.file = file;
+	public void setCv(byte[] file) {
+		this.cv = file;
+	}
+
+	public byte[] getMotivation() {
+		return motivation;
+	}
+
+	public void setMotivation(byte[] motivation) {
+		this.motivation = motivation;
+	}
+
+	public byte[] getCoverLetter() {
+		return coverLetter;
+	}
+
+	public void setCoverLetter(byte[] coverLetter) {
+		this.coverLetter = coverLetter;
 	}
 
 	public Boolean getDeleted() {

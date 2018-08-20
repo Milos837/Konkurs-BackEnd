@@ -42,7 +42,7 @@ public class ApplicationEntity {
 	
 	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JsonIgnore
-	private CvEntity cv;
+	private AttachmentEntity cv;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "posting")
@@ -90,11 +90,11 @@ public class ApplicationEntity {
 		this.note = note;
 	}
 
-	public CvEntity getCv() {
+	public AttachmentEntity getCv() {
 		return cv;
 	}
 
-	public void setCv(CvEntity cv) {
+	public void setCv(AttachmentEntity cv) {
 		this.cv = cv;
 	}
 

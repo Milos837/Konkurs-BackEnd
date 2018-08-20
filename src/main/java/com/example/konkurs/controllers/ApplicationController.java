@@ -1,6 +1,5 @@
 package com.example.konkurs.controllers;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ import com.example.konkurs.entities.ApplicationEntity;
 import com.example.konkurs.entities.CandidateLanguageEntity;
 import com.example.konkurs.entities.CertificateEntity;
 import com.example.konkurs.entities.CitizenshipEntity;
-import com.example.konkurs.entities.CvEntity;
+import com.example.konkurs.entities.AttachmentEntity;
 import com.example.konkurs.entities.EducationEntity;
 import com.example.konkurs.entities.LanguageEntity;
 import com.example.konkurs.entities.PostingEntity;
@@ -34,7 +33,7 @@ import com.example.konkurs.repositories.ApplicationRepository;
 import com.example.konkurs.repositories.CandidateLanguageRepository;
 import com.example.konkurs.repositories.CertificateRepository;
 import com.example.konkurs.repositories.CitizenshipRepository;
-import com.example.konkurs.repositories.CvRepository;
+import com.example.konkurs.repositories.AttachmentRepository;
 import com.example.konkurs.repositories.EducationRepository;
 import com.example.konkurs.repositories.LanguageRepository;
 import com.example.konkurs.repositories.PostingRepository;
@@ -73,7 +72,7 @@ public class ApplicationController {
 	private FileHandler fileHandler;
 	
 	@Autowired
-	private CvRepository cvRepository;
+	private AttachmentRepository attachmentRepository;
 	
 	//	Vrati sve
 	@GetMapping("/")
@@ -186,16 +185,45 @@ public class ApplicationController {
 	
 	//	uploaduj CV za aplikaciju
 	@PostMapping("/{appId}/uploadCV/no-security/")
-	public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
+	public ResponseEntity<?> uploadCV(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
 				&& applicationRepository.findById(appId).get().getCv() == null) {
-			Boolean result = fileHandler.uploadCv(file, appId);
-			if (result) {
-				return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+			AttachmentEntity attachment = fileHandler.uploadCv(file, appId);
+			if (attachment != null) {
+				return new ResponseEntity<AttachmentEntity>(attachment, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<Boolean>(result, HttpStatus.BAD_REQUEST);
+				return null;
 			}
-			
+		}
+		return null;
+	}
+	
+	//	uploaduj motivaciono pismo za aplikaciju
+	@PostMapping("/{appId}/uploadML/no-security/")
+	public ResponseEntity<?> uploadML(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
+				&& applicationRepository.findById(appId).get().getCv() == null) {
+			AttachmentEntity attachment = fileHandler.uploadML(file, appId);
+			if (attachment != null) {
+				return new ResponseEntity<AttachmentEntity>(attachment, HttpStatus.OK);
+			} else {
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	//	uploaduj propratno pismo za aplikaciju
+	@PostMapping("/{appId}/uploadCL/no-security/")
+	public ResponseEntity<?> uploadCL(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
+				&& applicationRepository.findById(appId).get().getCv() == null) {
+			AttachmentEntity attachment = fileHandler.uploadCL(file, appId);
+			if (attachment != null) {
+				return new ResponseEntity<AttachmentEntity>(attachment, HttpStatus.OK);
+			} else {
+				return null;
+			}
 		}
 		return null;
 	}
@@ -206,25 +234,71 @@ public class ApplicationController {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
 			ApplicationEntity app = applicationRepository.findById(appId).get();
 			
-			if (!cvRepository.existsByApplication(app)) {
+			if (!attachmentRepository.existsByApplication(app)) {
 				return null;
 			}
 			
-			CvEntity cv = cvRepository.findByApplication(app);
+			AttachmentEntity cv = attachmentRepository.findByApplication(app);
 			
 			HttpHeaders responseHeaders = new HttpHeaders();
 	        responseHeaders.add("content-disposition", "attachment; filename=" + "cv.pdf");
 	        
-			
 			return ResponseEntity.ok()
 		            .headers(responseHeaders)
-		            .contentLength(cv.getFile().length)
+		            .contentLength(cv.getCv().length)
 		            .contentType(MediaType.parseMediaType("application/octet-stream"))
-		            .body(new ByteArrayResource(cv.getFile()));
+		            .body(new ByteArrayResource(cv.getCv()));
 		}
 		return null;
 	}
-//	
+	
+	//	Preuzmi motivaciono pismo za aplikaciju
+	@PostMapping("/{appId}/downloadML/")
+	public ResponseEntity<Resource> downloadML(@PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
+			ApplicationEntity app = applicationRepository.findById(appId).get();
+			
+			if (!attachmentRepository.existsByApplication(app)) {
+				return null;
+			}
+			
+			AttachmentEntity attachment = attachmentRepository.findByApplication(app);
+			
+			HttpHeaders responseHeaders = new HttpHeaders();
+	        responseHeaders.add("content-disposition", "attachment; filename=" + "ml.pdf");
+	        
+			return ResponseEntity.ok()
+		            .headers(responseHeaders)
+		            .contentLength(attachment.getMotivation().length)
+		            .contentType(MediaType.parseMediaType("application/octet-stream"))
+		            .body(new ByteArrayResource(attachment.getMotivation()));
+		}
+		return null;
+	}
+	
+	//	Preuzmi propratno pismo za aplikaciju
+	@PostMapping("/{appId}/downloadCL/")
+	public ResponseEntity<Resource> downloadCL(@PathVariable Integer appId) {
+		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
+			ApplicationEntity app = applicationRepository.findById(appId).get();
+			
+			if (!attachmentRepository.existsByApplication(app)) {
+				return null;
+			}
+			
+			AttachmentEntity attachment = attachmentRepository.findByApplication(app);
+			
+			HttpHeaders responseHeaders = new HttpHeaders();
+	        responseHeaders.add("content-disposition", "attachment; filename=" + "cl.pdf");
+	        
+			return ResponseEntity.ok()
+		            .headers(responseHeaders)
+		            .contentLength(attachment.getCoverLetter().length)
+		            .contentType(MediaType.parseMediaType("application/octet-stream"))
+		            .body(new ByteArrayResource(attachment.getCoverLetter()));
+		}
+		return null;
+	}
 	
 	
 	

@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService{
 			ApplicationEntity app = applicationRepository.findById(appId).get();
 			
 			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo("milos837@gmail.com");
+			message.setTo("brains.ednevnik@gmail.com");
 			message.setSubject("New application");
 			String text = "New application for " + app.getPosting().getName() + " from candidate " + app.getCandidate().getFirstName() + " " + 
 					app.getCandidate().getLastName();

@@ -1,58 +1,100 @@
 package com.example.konkurs.services;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.konkurs.entities.ApplicationEntity;
-import com.example.konkurs.entities.CvEntity;
+import com.example.konkurs.entities.AttachmentEntity;
 import com.example.konkurs.repositories.ApplicationRepository;
-import com.example.konkurs.repositories.CvRepository;
+import com.example.konkurs.repositories.AttachmentRepository;
 
 @Service
-public class FileHandlerImpl implements FileHandler{
-	
+public class FileHandlerImpl implements FileHandler {
+
 	@Autowired
 	private ApplicationRepository applicationRepository;
-	
+
 	@Autowired
-	private CvRepository cvRepository;
-	
-	public Boolean uploadCv(MultipartFile file, Integer appId) {
-		
+	private AttachmentRepository attachmentRepository;
+
+	public AttachmentEntity uploadCv(MultipartFile file, Integer appId) {
+
 		try {
-			
+
 			byte[] bytes = file.getBytes();
-			
-            
-            if (applicationRepository.existsById(appId)) {
-            	ApplicationEntity app = applicationRepository.findById(appId).get();
-            	CvEntity cv = new CvEntity();
-            	cv.setDeleted(false);
-            	cv.setApplication(app);
-            	cv.setFile(bytes);
-            	cvRepository.save(cv);
-            }
-            
-            return true;
-			
+
+			if (applicationRepository.existsById(appId)) {
+				ApplicationEntity app = applicationRepository.findById(appId).get();
+				AttachmentEntity cv = new AttachmentEntity();
+				cv.setDeleted(false);
+				cv.setApplication(app);
+				cv.setCv(bytes);
+				attachmentRepository.save(cv);
+
+				return cv;
+			}
+
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
-			return false;
+
 		}
+		return null;
+	}
+
+	public AttachmentEntity uploadML(MultipartFile file, Integer appId) {
+		try {
+
+			byte[] bytes = file.getBytes();
+
+			if (applicationRepository.existsById(appId)) {
+				ApplicationEntity app = applicationRepository.findById(appId).get();
+				if (attachmentRepository.existsByApplication(app)) {
+					AttachmentEntity attachment = attachmentRepository.findByApplication(app);
+					attachment.setMotivation(bytes);
+					attachmentRepository.save(attachment);
+
+					return attachment;
+				}
+			}
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+
+		}
+		return null;
 	}
 	
+	public AttachmentEntity uploadCL(MultipartFile file, Integer appId) {
+		try {
+
+			byte[] bytes = file.getBytes();
+
+			if (applicationRepository.existsById(appId)) {
+				ApplicationEntity app = applicationRepository.findById(appId).get();
+				if (attachmentRepository.existsByApplication(app)) {
+					AttachmentEntity attachment = attachmentRepository.findByApplication(app);
+					attachment.setCoverLetter(bytes);
+					attachmentRepository.save(attachment);
+
+					return attachment;
+				}
+			}
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+
+		}
+		return null;
+	}
+
 	public byte[] getCv(Integer appId) {
-		
-		CvEntity cv = cvRepository.findByApplication(applicationRepository.findById(appId).get());
-		
-		return cv.getFile();
+
+		AttachmentEntity cv = attachmentRepository.findByApplication(applicationRepository.findById(appId).get());
+
+		return cv.getCv();
 	}
 
 }

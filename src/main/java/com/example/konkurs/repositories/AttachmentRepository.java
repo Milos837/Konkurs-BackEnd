@@ -3,11 +3,11 @@ package com.example.konkurs.repositories;
 import org.springframework.data.repository.CrudRepository;
 
 import com.example.konkurs.entities.ApplicationEntity;
-import com.example.konkurs.entities.CvEntity;
+import com.example.konkurs.entities.AttachmentEntity;
 
-public interface CvRepository extends CrudRepository<CvEntity, Integer> {
+public interface AttachmentRepository extends CrudRepository<AttachmentEntity, Integer> {
 	
-	CvEntity findByApplication(ApplicationEntity application);
+	AttachmentEntity findByApplication(ApplicationEntity application);
 	
 	Boolean existsByApplication(ApplicationEntity application);
 
