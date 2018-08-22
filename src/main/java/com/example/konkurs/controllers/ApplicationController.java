@@ -262,6 +262,10 @@ public class ApplicationController {
 				return null;
 			}
 			
+			if (attachmentRepository.findByApplication(app).getMotivation() == null) {
+				return null;
+			}
+			
 			AttachmentEntity attachment = attachmentRepository.findByApplication(app);
 			
 			HttpHeaders responseHeaders = new HttpHeaders();
@@ -283,6 +287,10 @@ public class ApplicationController {
 			ApplicationEntity app = applicationRepository.findById(appId).get();
 			
 			if (!attachmentRepository.existsByApplication(app)) {
+				return null;
+			}
+			
+			if (attachmentRepository.findByApplication(app).getCoverLetter() == null) {
 				return null;
 			}
 			
