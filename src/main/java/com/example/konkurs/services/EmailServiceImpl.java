@@ -6,6 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.example.konkurs.entities.ApplicationEntity;
+import com.example.konkurs.entities.util.EmailObject;
 import com.example.konkurs.repositories.ApplicationRepository;
 
 @Service
@@ -34,6 +35,19 @@ public class EmailServiceImpl implements EmailService{
 			} catch (Exception e) {
 				e.getMessage();
 			}
+		}
+	}
+	
+	@Override
+	public void sendSimpleEmail(EmailObject email) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(email.getTo());
+		message.setSubject(email.getSubject());
+		message.setText(email.getText());
+		try {
+			emailSender.send(message);
+		} catch (Exception e) {
+			e.getMessage();
 		}
 	}
 

@@ -29,6 +29,7 @@ import com.example.konkurs.entities.EducationEntity;
 import com.example.konkurs.entities.LanguageEntity;
 import com.example.konkurs.entities.PostingEntity;
 import com.example.konkurs.entities.dto.ApplicationDto;
+import com.example.konkurs.entities.util.EmailObject;
 import com.example.konkurs.repositories.ApplicationRepository;
 import com.example.konkurs.repositories.CandidateLanguageRepository;
 import com.example.konkurs.repositories.CertificateRepository;
@@ -38,74 +39,78 @@ import com.example.konkurs.repositories.EducationRepository;
 import com.example.konkurs.repositories.LanguageRepository;
 import com.example.konkurs.repositories.PostingRepository;
 import com.example.konkurs.services.ApplicationService;
+import com.example.konkurs.services.EmailService;
 import com.example.konkurs.services.FileHandler;
 
 @RestController
 @RequestMapping(value = "/api/v1/applications")
 public class ApplicationController {
-	
+
 	@Autowired
 	private ApplicationRepository applicationRepository;
-	
+
 	@Autowired
 	private PostingRepository postingRepository;
-	
+
 	@Autowired
 	private ApplicationService applicationService;
-	
+
 	@Autowired
 	private CitizenshipRepository citizenshipRepository;
-	
+
 	@Autowired
 	private LanguageRepository languageRepository;
-	
+
 	@Autowired
 	private CandidateLanguageRepository candidateLanguageRepository;
-	
+
 	@Autowired
 	private EducationRepository educationRepository;
-	
+
 	@Autowired
 	private CertificateRepository certificateRepository;
-	
+
 	@Autowired
 	private FileHandler fileHandler;
-	
+
 	@Autowired
 	private AttachmentRepository attachmentRepository;
-	
-	//	Vrati sve
+
+	@Autowired
+	private EmailService emailService;
+
+	// Vrati sve
 	@GetMapping("/")
 	public ResponseEntity<?> getAll() {
-		
-		List<ApplicationEntity> applications = ((List<ApplicationEntity>) applicationRepository.findAll())
-				.stream().filter(app -> !app.getDeleted().equals(true))
-				.collect(Collectors.toList());
-		
+
+		List<ApplicationEntity> applications = ((List<ApplicationEntity>) applicationRepository.findAll()).stream()
+				.filter(app -> !app.getDeleted().equals(true)).collect(Collectors.toList());
+
 		return new ResponseEntity<List<ApplicationEntity>>(applications, HttpStatus.OK);
 	}
-	
-	//	Vrati po ID-u
+
+	// Vrati po ID-u
 	@GetMapping("/{applicationId}")
 	public ResponseEntity<?> getOne(@PathVariable Integer applicationId) {
-		if (applicationRepository.existsById(applicationId) && !applicationRepository.findById(applicationId).get().getDeleted()) {
+		if (applicationRepository.existsById(applicationId)
+				&& !applicationRepository.findById(applicationId).get().getDeleted()) {
 			ApplicationEntity application = applicationRepository.findById(applicationId).get();
 			return new ResponseEntity<ApplicationEntity>(application, HttpStatus.OK);
 		}
 		return null;
 	}
-	
-	//	Dodaj novi
+
+	// Dodaj novi
 	@PostMapping("/postings/{postingId}/no-security/")
 	public ResponseEntity<?> save(@PathVariable Integer postingId, @RequestBody ApplicationDto newApplication) {
-		if(postingRepository.existsById(postingId)) {
+		if (postingRepository.existsById(postingId)) {
 			ApplicationEntity application = applicationService.save(postingId, newApplication);
 			return new ResponseEntity<ApplicationEntity>(application, HttpStatus.OK);
 		}
 		return null;
 	}
-	
-	//	Obrisi (logicki)
+
+	// Obrisi (logicki)
 	@DeleteMapping("/{applicationId}")
 	public ResponseEntity<?> delete(@PathVariable Integer applicationId) {
 		ApplicationEntity application = applicationService.delete(applicationId);
@@ -114,54 +119,51 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	Vrati sva drzavljanstva
+
+	// Vrati sva drzavljanstva
 	@GetMapping("/citizenships/no-security/")
 	public ResponseEntity<?> getAllCitizenships() {
-		List<CitizenshipEntity> citizenships = ((List<CitizenshipEntity>) citizenshipRepository.findAll())
-				.stream().filter(citizenship -> !citizenship.getDeleted().equals(true))
-				.collect(Collectors.toList());
+		List<CitizenshipEntity> citizenships = ((List<CitizenshipEntity>) citizenshipRepository.findAll()).stream()
+				.filter(citizenship -> !citizenship.getDeleted().equals(true)).collect(Collectors.toList());
 		return new ResponseEntity<List<CitizenshipEntity>>(citizenships, HttpStatus.OK);
 	}
-	
-	//	Vrati sve jezike
+
+	// Vrati sve jezike
 	@GetMapping("/languages/no-security/")
 	public ResponseEntity<?> getAllLanguages() {
-		List<LanguageEntity> languages = ((List<LanguageEntity>) languageRepository.findAll())
-				.stream().filter(lang -> !lang.getDeleted().equals(true))
-				.collect(Collectors.toList());
-		
+		List<LanguageEntity> languages = ((List<LanguageEntity>) languageRepository.findAll()).stream()
+				.filter(lang -> !lang.getDeleted().equals(true)).collect(Collectors.toList());
+
 		return new ResponseEntity<List<LanguageEntity>>(languages, HttpStatus.OK);
 	}
-	
-	//	vrati prijave za konkurs
+
+	// vrati prijave za konkurs
 	@GetMapping("/posting/{postingId}")
 	public ResponseEntity<?> getApplicationsForPosting(@PathVariable Integer postingId) {
 		if (postingRepository.existsById(postingId) && !postingRepository.findById(postingId).get().getDeleted()) {
-			PostingEntity posting = postingRepository.findById(postingId).get();		
-			List<ApplicationEntity> applications = ((List<ApplicationEntity>) applicationRepository.findByPosting(posting))
-					.stream().filter(app -> !app.getDeleted().equals(true))
-					.collect(Collectors.toList());
+			PostingEntity posting = postingRepository.findById(postingId).get();
+			List<ApplicationEntity> applications = ((List<ApplicationEntity>) applicationRepository
+					.findByPosting(posting)).stream().filter(app -> !app.getDeleted().equals(true))
+							.collect(Collectors.toList());
 			return new ResponseEntity<List<ApplicationEntity>>(applications, HttpStatus.OK);
 		}
 		return null;
 	}
-	
-	//	Vrati jezike za aplikaciju
+
+	// Vrati jezike za aplikaciju
 	@GetMapping("/{appId}/languages/")
 	public ResponseEntity<?> getLanguagesForApplication(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
 			ApplicationEntity application = applicationRepository.findById(appId).get();
 			List<LanguageEntity> languages = ((List<CandidateLanguageEntity>) candidateLanguageRepository
-					.findByCandidate(application.getCandidate()))
-					.stream().map(c -> c.getLanguage())
-					.collect(Collectors.toList());
+					.findByCandidate(application.getCandidate())).stream().map(c -> c.getLanguage())
+							.collect(Collectors.toList());
 			return new ResponseEntity<List<LanguageEntity>>(languages, HttpStatus.OK);
 		}
 		return null;
 	}
-	
-	//	Vrati skole za aplikaciju
+
+	// Vrati skole za aplikaciju
 	@GetMapping("/{appId}/educations/")
 	public ResponseEntity<?> getSchoolsForApplication(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
@@ -171,8 +173,8 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	Vrato sertifikate za aplikaciju
+
+	// Vrato sertifikate za aplikaciju
 	@GetMapping("/{appId}/certificates/")
 	public ResponseEntity<?> getCertificatesForApplication(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
@@ -182,8 +184,8 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	uploaduj CV za aplikaciju
+
+	// uploaduj CV za aplikaciju
 	@PostMapping("/{appId}/uploadCV/no-security/")
 	public ResponseEntity<?> uploadCV(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
@@ -197,8 +199,8 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	uploaduj motivaciono pismo za aplikaciju
+
+	// uploaduj motivaciono pismo za aplikaciju
 	@PostMapping("/{appId}/uploadML/no-security/")
 	public ResponseEntity<?> uploadML(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
@@ -212,8 +214,8 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	uploaduj propratno pismo za aplikaciju
+
+	// uploaduj propratno pismo za aplikaciju
 	@PostMapping("/{appId}/uploadCL/no-security/")
 	public ResponseEntity<?> uploadCL(@RequestParam("file") MultipartFile file, @PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()
@@ -227,88 +229,86 @@ public class ApplicationController {
 		}
 		return null;
 	}
-	
-	//	Preuzmi CV za aplikaciju
+
+	// Preuzmi CV za aplikaciju
 	@PostMapping("/{appId}/downloadCV/")
 	public ResponseEntity<Resource> downloadCv(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
 			ApplicationEntity app = applicationRepository.findById(appId).get();
-			
+
 			if (!attachmentRepository.existsByApplication(app)) {
 				return null;
 			}
-			
+
 			AttachmentEntity cv = attachmentRepository.findByApplication(app);
-			
+
 			HttpHeaders responseHeaders = new HttpHeaders();
-	        responseHeaders.add("content-disposition", "attachment; filename=" + "cv.pdf");
-	        
-			return ResponseEntity.ok()
-		            .headers(responseHeaders)
-		            .contentLength(cv.getCv().length)
-		            .contentType(MediaType.parseMediaType("application/octet-stream"))
-		            .body(new ByteArrayResource(cv.getCv()));
+			responseHeaders.add("content-disposition", "attachment; filename=" + "cv.pdf");
+
+			return ResponseEntity.ok().headers(responseHeaders).contentLength(cv.getCv().length)
+					.contentType(MediaType.parseMediaType("application/octet-stream"))
+					.body(new ByteArrayResource(cv.getCv()));
 		}
 		return null;
 	}
-	
-	//	Preuzmi motivaciono pismo za aplikaciju
+
+	// Preuzmi motivaciono pismo za aplikaciju
 	@PostMapping("/{appId}/downloadML/")
 	public ResponseEntity<Resource> downloadML(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
 			ApplicationEntity app = applicationRepository.findById(appId).get();
-			
+
 			if (!attachmentRepository.existsByApplication(app)) {
 				return null;
 			}
-			
+
 			if (attachmentRepository.findByApplication(app).getMotivation() == null) {
 				return null;
 			}
-			
+
 			AttachmentEntity attachment = attachmentRepository.findByApplication(app);
-			
+
 			HttpHeaders responseHeaders = new HttpHeaders();
-	        responseHeaders.add("content-disposition", "attachment; filename=" + "ml.pdf");
-	        
-			return ResponseEntity.ok()
-		            .headers(responseHeaders)
-		            .contentLength(attachment.getMotivation().length)
-		            .contentType(MediaType.parseMediaType("application/octet-stream"))
-		            .body(new ByteArrayResource(attachment.getMotivation()));
+			responseHeaders.add("content-disposition", "attachment; filename=" + "ml.pdf");
+
+			return ResponseEntity.ok().headers(responseHeaders).contentLength(attachment.getMotivation().length)
+					.contentType(MediaType.parseMediaType("application/octet-stream"))
+					.body(new ByteArrayResource(attachment.getMotivation()));
 		}
 		return null;
 	}
-	
-	//	Preuzmi propratno pismo za aplikaciju
+
+	// Preuzmi propratno pismo za aplikaciju
 	@PostMapping("/{appId}/downloadCL/")
 	public ResponseEntity<Resource> downloadCL(@PathVariable Integer appId) {
 		if (applicationRepository.existsById(appId) && !applicationRepository.findById(appId).get().getDeleted()) {
 			ApplicationEntity app = applicationRepository.findById(appId).get();
-			
+
 			if (!attachmentRepository.existsByApplication(app)) {
 				return null;
 			}
-			
+
 			if (attachmentRepository.findByApplication(app).getCoverLetter() == null) {
 				return null;
 			}
-			
+
 			AttachmentEntity attachment = attachmentRepository.findByApplication(app);
-			
+
 			HttpHeaders responseHeaders = new HttpHeaders();
-	        responseHeaders.add("content-disposition", "attachment; filename=" + "cl.pdf");
-	        
-			return ResponseEntity.ok()
-		            .headers(responseHeaders)
-		            .contentLength(attachment.getCoverLetter().length)
-		            .contentType(MediaType.parseMediaType("application/octet-stream"))
-		            .body(new ByteArrayResource(attachment.getCoverLetter()));
+			responseHeaders.add("content-disposition", "attachment; filename=" + "cl.pdf");
+
+			return ResponseEntity.ok().headers(responseHeaders).contentLength(attachment.getCoverLetter().length)
+					.contentType(MediaType.parseMediaType("application/octet-stream"))
+					.body(new ByteArrayResource(attachment.getCoverLetter()));
 		}
 		return null;
 	}
-	
-	
-	
+
+	@PostMapping("/sendEmail/")
+	public ResponseEntity<?> sendEmail(@RequestBody EmailObject email) {
+		emailService.sendSimpleEmail(email);
+		return new ResponseEntity<EmailObject>(email, HttpStatus.OK);
+
+	}
 
 }
